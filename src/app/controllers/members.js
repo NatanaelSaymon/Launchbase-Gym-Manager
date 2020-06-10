@@ -1,6 +1,6 @@
 const { age, date } = require('../../lib/utils')
 
-modules.exports = {
+module.exports = {
   index(req, res){
     return res.render('members/index')
   },
