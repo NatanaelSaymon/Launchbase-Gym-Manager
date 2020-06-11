@@ -1,4 +1,5 @@
 const Instructor = require('../models/Instructor')
+const { age, date } = require('../../lib/utils')
 
 module.exports = {
   index(req, res){
@@ -25,11 +26,30 @@ module.exports = {
   },
 
   show(req, res){
-    return
+    Instructor.find(req.params.id, function(instructor){
+      if(!instructor){
+        return res.send("Instrutor não encontrado, tente novamente!")
+      }
+
+      //configurando os itens(birth, services, created_at)
+      instructor.age = age(instructor.birth)
+      instructor.services = instructor.services.split(",")
+      instructor.created_at = date(instructor.created_at).format
+      return res.render("instructors/show", { instructor }) 
+    })
   },
 
   edit(req, res){
-    return
+    Instructor.find(req.params.id, function(instructor){
+      if(!instructor){
+        return res.send("Instrutor não encontrado, tente novamente!")
+      }
+
+      //configurando o item(birth "data de nascimento")
+      instructor.birth = date(instructor.birth).iso
+      
+      return res.render("instructors/edit", { instructor }) 
+    })
   },
 
   put(req, res){
@@ -40,7 +60,9 @@ module.exports = {
       }
     }
 
-    return
+    Instructor.update(req.body, function(){
+      return res.redirect(`/instructors/${req.body.id}`)
+    })
   },
   
   delete(req, res){
