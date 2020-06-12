@@ -4,7 +4,7 @@ const { age, date } = require('../../lib/utils')
 module.exports = {
   //Funções padrões
   all(callback){
-    db.query(`SELECT * FROM members`, function(err, results){
+    db.query(`SELECT * FROM members ORDER BY name ASC`, function(err, results){
       if(err){
         throw `Database Error! ${err}`
       }
@@ -87,6 +87,15 @@ module.exports = {
         throw `Database Error! ${err}`  
       }
 
+      callback()
+    })
+  },
+
+  delete(id, callback){
+    db.query(`DELETE FROM members WHERE id = $1`, [id], function(err, results){
+      if(err){
+        throw `Database Error! ${err}`
+      }
       callback()
     })
   }
