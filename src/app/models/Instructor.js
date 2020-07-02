@@ -15,6 +15,7 @@ module.exports = {
       callback(results.rows)
     })
   },
+  
   create(data, callback){
     const query = `
       INSERT INTO instructors (
@@ -45,6 +46,7 @@ module.exports = {
       callback(results.rows[0])
     })
   },
+
   find(id, callback){
     db.query(`SELECT * FROM instructors WHERE id = $1`, [id], function(err, results){
       if(err){
@@ -54,6 +56,22 @@ module.exports = {
       callback(results.rows[0])
     })
   },
+
+  findBy(filter, callback){
+    db.query(`
+      SELECT instructors.*, count(members) AS total_members
+      FROM instructors
+      LEFT JOIN members ON (members.instructor_id = instructors.id)
+      WHERE instructors.name ILIKE '%${filter}%'
+      OR instructors.services ILIKE '%${filter}%'
+      GROUP BY instructors.id ORDER BY name ASC`, function(err, results){
+      if(err) {
+        throw `Database Error! ${err}`  
+      }
+      callback(results.rows)
+    })
+  },
+
   update(data, callback){
     const query = `
       UPDATE instructors SET
@@ -81,6 +99,7 @@ module.exports = {
         callback()
       })
   },
+
   delete(id, callback){
     db.query(`DELETE FROM instructors WHERE id = $1`, [id], function(err, results){
       if(err){
